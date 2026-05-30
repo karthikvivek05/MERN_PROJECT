@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Yoga mat">
+  <rect width="800" height="600" fill="#eef3f8"/>
+  <rect x="150" y="120" width="500" height="380" rx="28" fill="#ffffff"/>
+  <rect x="200" y="350" width="360" height="70" rx="35" fill="#14b8a6"/>
+  <ellipse cx="560" cy="385" rx="58" ry="58" fill="#0f766e"/>
+  <ellipse cx="560" cy="385" rx="28" ry="28" fill="#ccfbf1"/>
+  <path d="M256 318c54-80 126-80 180 0" fill="none" stroke="#f59e0b" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="346" cy="214" r="34" fill="#f59e0b"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">Yoga Mat</text>
+</svg>

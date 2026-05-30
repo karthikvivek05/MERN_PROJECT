@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Ceramic coffee mug">
+  <rect width="800" height="600" fill="#eef3f8"/>
+  <rect x="160" y="120" width="480" height="380" rx="28" fill="#ffffff"/>
+  <path d="M286 240h220v145c0 56-45 101-101 101h-18c-56 0-101-45-101-101z" fill="#ef4444"/>
+  <path d="M506 280h34c48 0 48 78 0 78h-34" fill="none" stroke="#ef4444" stroke-width="28" stroke-linecap="round"/>
+  <path d="M330 198c-24-34 30-42 8-78M398 198c-24-34 30-42 8-78M466 198c-24-34 30-42 8-78" stroke="#94a3b8" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">Coffee Mug</text>
+</svg>

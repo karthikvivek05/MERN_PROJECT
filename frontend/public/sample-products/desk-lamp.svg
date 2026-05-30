@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Desk lamp">
+  <rect width="800" height="600" fill="#eef3f8"/>
+  <rect x="150" y="120" width="500" height="380" rx="28" fill="#ffffff"/>
+  <path d="M312 378l100-138 76 58-108 142" stroke="#334155" stroke-width="22" stroke-linecap="round" fill="none"/>
+  <path d="M470 198l112 86-70 90-112-86z" fill="#facc15"/>
+  <path d="M236 458h240" stroke="#334155" stroke-width="24" stroke-linecap="round"/>
+  <circle cx="402" cy="246" r="24" fill="#64748b"/>
+  <path d="M556 376l54 44M592 338l70 8M514 410l12 70" stroke="#fde68a" stroke-width="12" stroke-linecap="round"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">Desk Lamp</text>
+</svg>

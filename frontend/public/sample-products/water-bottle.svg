@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Stainless steel water bottle">
+  <rect width="800" height="600" fill="#eef3f8"/>
+  <rect x="170" y="120" width="460" height="380" rx="28" fill="#ffffff"/>
+  <rect x="352" y="110" width="96" height="68" rx="18" fill="#64748b"/>
+  <rect x="322" y="170" width="156" height="310" rx="54" fill="#94a3b8"/>
+  <path d="M338 230h124v160H338z" fill="#e2e8f0" opacity=".75"/>
+  <path d="M350 186h100" stroke="#f8fafc" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">Water Bottle</text>
+</svg>

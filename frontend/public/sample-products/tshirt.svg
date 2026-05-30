@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Everyday cotton T-shirt">
+  <rect width="800" height="600" fill="#eef3f8"/>
+  <rect x="160" y="120" width="480" height="380" rx="28" fill="#ffffff"/>
+  <path d="M290 150h220l72 76-72 74-50-42v210H340V258l-50 42-72-74z" fill="#3b82f6"/>
+  <path d="M340 150c20 42 100 42 120 0z" fill="#dbeafe"/>
+  <path d="M342 250h116" stroke="#1d4ed8" stroke-width="12" stroke-linecap="round" opacity=".55"/>
+  <text x="400" y="540" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#172033">Cotton T-Shirt</text>
+</svg>

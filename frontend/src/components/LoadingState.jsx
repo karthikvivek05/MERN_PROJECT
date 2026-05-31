@@ -155,6 +155,7 @@ const StyledWrapper = styled.div`
     justify-content: flex-end;
     overflow-x: hidden;
     transform: scale(0.6);
+    margin-right: 350px;
   }
 
   .truckBody {

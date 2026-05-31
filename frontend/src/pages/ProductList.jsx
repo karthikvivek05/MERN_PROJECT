@@ -1,4 +1,4 @@
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/ProductCard.jsx";
@@ -23,9 +23,9 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
       maxPrice: searchParams.get("maxPrice") || "",
       rating: searchParams.get("rating") || "",
       sort: searchParams.get("sort") || "newest",
-      page: searchParams.get("page") || "1"
+      page: searchParams.get("page") || "1",
     }),
-    [queryString]
+    [queryString],
   );
 
   useEffect(() => {
@@ -66,67 +66,128 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
 
   const clearFilters = () => setSearchParams({});
 
+  const FiltersInputs = () => (
+    <>
+      <input
+        value={filters.keyword}
+        onChange={(event) => updateFilter("keyword", event.target.value)}
+        placeholder="Keyword"
+        aria-label="Keyword"
+      />
+      <select
+        value={filters.category}
+        onChange={(event) => updateFilter("category", event.target.value)}
+      >
+        <option value="">All categories</option>
+        {categories.map((category) => (
+          <option key={category} value={category}>
+            {category}
+          </option>
+        ))}
+      </select>
+      <input
+        type="number"
+        min="0"
+        value={filters.minPrice}
+        onChange={(event) => updateFilter("minPrice", event.target.value)}
+        placeholder="Min price"
+        aria-label="Minimum price"
+      />
+      <input
+        type="number"
+        min="0"
+        value={filters.maxPrice}
+        onChange={(event) => updateFilter("maxPrice", event.target.value)}
+        placeholder="Max price"
+        aria-label="Maximum price"
+      />
+      <select
+        value={filters.rating}
+        onChange={(event) => updateFilter("rating", event.target.value)}
+      >
+        <option value="">Any rating</option>
+        <option value="4">4+</option>
+        <option value="3">3+</option>
+        <option value="2">2+</option>
+      </select>
+      <select
+        value={filters.sort}
+        onChange={(event) => updateFilter("sort", event.target.value)}
+      >
+        <option value="newest">Newest</option>
+        <option value="top-rated">Top rated</option>
+        <option value="price-asc">Price low to high</option>
+        <option value="price-desc">Price high to low</option>
+      </select>
+      <button className="secondary-button" type="button" onClick={clearFilters}>
+        Reset
+      </button>
+    </>
+  );
+
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
   return (
     <section className="stack">
       <div className="section-heading">
         <div>
           <h1>{title}</h1>
-          {!compactIntro && <p className="muted">Search, filter, and sort the full catalog.</p>}
+          {!compactIntro && (
+            <p className="muted">Search, filter, and sort the full catalog.</p>
+          )}
         </div>
         <p className="muted">{pagination.total || 0} item(s)</p>
       </div>
 
       <div className="toolbar">
         <div className="toolbar-title">
-          <SlidersHorizontal size={18} aria-hidden="true" />
+          <span className="toolbar-icon-desktop">
+            <SlidersHorizontal size={18} aria-hidden="true" />
+          </span>
+
+          {/* functional filters button — shown on mobile in the same spot */}
+          <button
+            type="button"
+            className="icon-button filters-button"
+            aria-label="Open filters"
+            onClick={() => setMobileFiltersOpen(true)}
+          >
+            <SlidersHorizontal size={18} />
+          </button>
+
           <span>Filters</span>
         </div>
-        <input
-          value={filters.keyword}
-          onChange={(event) => updateFilter("keyword", event.target.value)}
-          placeholder="Keyword"
-          aria-label="Keyword"
-        />
-        <select value={filters.category} onChange={(event) => updateFilter("category", event.target.value)}>
-          <option value="">All categories</option>
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          min="0"
-          value={filters.minPrice}
-          onChange={(event) => updateFilter("minPrice", event.target.value)}
-          placeholder="Min price"
-          aria-label="Minimum price"
-        />
-        <input
-          type="number"
-          min="0"
-          value={filters.maxPrice}
-          onChange={(event) => updateFilter("maxPrice", event.target.value)}
-          placeholder="Max price"
-          aria-label="Maximum price"
-        />
-        <select value={filters.rating} onChange={(event) => updateFilter("rating", event.target.value)}>
-          <option value="">Any rating</option>
-          <option value="4">4+</option>
-          <option value="3">3+</option>
-          <option value="2">2+</option>
-        </select>
-        <select value={filters.sort} onChange={(event) => updateFilter("sort", event.target.value)}>
-          <option value="newest">Newest</option>
-          <option value="top-rated">Top rated</option>
-          <option value="price-asc">Price low to high</option>
-          <option value="price-desc">Price high to low</option>
-        </select>
-        <button className="secondary-button" type="button" onClick={clearFilters}>
-          Reset
-        </button>
+
+        {/* Desktop / wide screens: show inputs inline */}
+        <div className="toolbar-filters-desktop">
+          <FiltersInputs />
+        </div>
       </div>
+
+      {/* Mobile overlay panel */}
+      {mobileFiltersOpen && (
+        <div className="mobile-filters-overlay" role="dialog" aria-modal="true">
+          <div className="mobile-filters-panel">
+            <div className="mobile-filters-header">
+              <strong>Filters</strong>
+              <button
+                className="icon-button"
+                onClick={() => setMobileFiltersOpen(false)}
+                aria-label="Close filters"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="mobile-filters-body">
+              <FiltersInputs />
+            </div>
+          </div>
+          <div
+            className="mobile-filters-backdrop"
+            onClick={() => setMobileFiltersOpen(false)}
+          />
+        </div>
+      )}
 
       <ErrorMessage message={error} />
 

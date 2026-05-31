@@ -209,10 +209,9 @@ h2 {
 
 .toolbar {
   display: grid;
-  grid-template-columns: auto minmax(160px, 1.2fr) repeat(
-      5,
-      minmax(120px, 1fr)
-    ) auto;
+  grid-template-columns:
+    auto minmax(160px, 1.2fr) repeat(5, minmax(120px, 1fr))
+    auto;
   gap: 10px;
   align-items: center;
   padding: 14px;
@@ -834,4 +833,87 @@ button:disabled,
   .order-item > strong {
     grid-column: 2;
   }
+}
+
+/* Filters button + overlay */
+.filters-button {
+  width: 44px;
+  height: 44px;
+  display: none; /* hidden by default on desktop */
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.toolbar-filters-desktop {
+  display: contents;
+}
+
+@media (max-width: 980px) {
+  /* hide inline filters and show compact button on small screens */
+  .toolbar-filters-desktop {
+    display: none;
+  }
+
+  .filters-button {
+    display: inline-grid;
+    margin-right: 8px;
+  }
+}
+
+/* show/hide the decorative icon in the title depending on viewport */
+.toolbar-icon-desktop {
+  display: inline-flex;
+  margin-right: 8px;
+  color: var(--muted);
+}
+
+@media (max-width: 980px) {
+  .toolbar-icon-desktop {
+    display: none;
+  }
+}
+
+/* Mobile filters overlay (dialog) */
+.mobile-filters-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.mobile-filters-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 20, 30, 0.45);
+  pointer-events: auto;
+}
+
+.mobile-filters-panel {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border-radius: 12px 12px 0 0;
+  padding: 14px;
+  box-shadow: 0 30px 60px rgba(10, 20, 34, 0.3);
+  z-index: 62;
+}
+
+.mobile-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.mobile-filters-body {
+  display: grid;
+  gap: 10px;
 }

@@ -242,6 +242,67 @@ const StyledWrapper = styled.div`
       transform: translateX(-350px);
     }
   }
+
+  /* Mobile / small-screen overrides */
+  @media (max-width: 600px) {
+    .loader {
+      height: 48vh;
+      padding: 0 12px;
+    }
+
+    .truckWrapper {
+      width: 170px;
+      height: 90px;
+      transform: scale(0.5);
+      margin-right: 0;
+      margin-left: 0;
+      align-self: center;
+      justify-content: center;
+      right: auto;
+    }
+
+    .truckBody {
+      width: 120px;
+      margin-bottom: 4px;
+      animation: motion 0.9s linear infinite;
+    }
+
+    .truckTires svg {
+      width: 18px;
+    }
+
+    .road {
+      height: 1.2px;
+    }
+
+    .road::before {
+      right: -30%;
+      border-left: 8px solid white;
+      animation: roadAnimationMobile 1.2s linear infinite;
+    }
+
+    .road::after {
+      right: -45%;
+      border-left: 3px solid white;
+      animation: roadAnimationMobile 1.2s linear infinite;
+    }
+
+    .lampPost {
+      right: -55%;
+      height: 68px;
+      animation: roadAnimationMobile 1.2s linear infinite;
+    }
+  }
+
+  /* Shorter travel for mobile so elements stay visible */
+  @keyframes roadAnimationMobile {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-180px);
+    }
+  }
 `;
 
 export default LoadingState;

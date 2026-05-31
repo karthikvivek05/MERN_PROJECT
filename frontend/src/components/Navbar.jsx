@@ -60,9 +60,6 @@ const Navbar = () => {
         </button>
 
         <nav className={`nav-links ${open ? "open" : ""}`}>
-          <NavLink to="/products" onClick={() => setOpen(false)}>
-            Products
-          </NavLink>
           <NavLink
             to="/cart"
             className="cart-link"

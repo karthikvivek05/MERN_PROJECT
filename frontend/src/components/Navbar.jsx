@@ -4,6 +4,7 @@ import {
   Search,
   ShoppingCart,
   UserRound,
+  ChevronDown,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -13,6 +14,7 @@ import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const { user, isAdmin, logout } = useAuth();
   const { itemCount } = useCart();
@@ -30,6 +32,11 @@ const Navbar = () => {
     await logout();
     navigate("/");
     setOpen(false);
+    setUserMenuOpen(false);
+  };
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen((current) => !current);
   };
 
   return (
@@ -76,16 +83,34 @@ const Navbar = () => {
               </NavLink>
               {isAdmin && (
                 <NavLink to="/admin" onClick={() => setOpen(false)}>
-                  Admin
+                  Dashboard
                 </NavLink>
               )}
-              <button
-                className="text-button"
-                type="button"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+              <div className="user-menu">
+                <button
+                  className="text-button user-menu-trigger"
+                  type="button"
+                  onClick={toggleUserMenu}
+                  aria-expanded={userMenuOpen}
+                  aria-haspopup="menu"
+                >
+                  <UserRound size={18} aria-hidden="true" />
+                  <span>{user.name}</span>
+                  <ChevronDown size={16} aria-hidden="true" />
+                </button>
+                {userMenuOpen && (
+                  <div className="user-menu-dropdown" role="menu">
+                    <button
+                      className="user-menu-item"
+                      type="button"
+                      onClick={handleLogout}
+                      role="menuitem"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <NavLink to="/login" onClick={() => setOpen(false)}>

@@ -4,27 +4,49 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
-const STORAGE_KEY = "general-store-cart";
-
-const readCart = () => {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
-};
 
 export const CartProvider = ({ children }) => {
-  const [items, setItems] = useState(readCart);
+  const { user } = useAuth();
+  const [items, setItems] = useState([]);
+  const loadedUserIdRef = useRef(null);
 
+  // Load user-specific cart when user changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+    if (user) {
+      if (loadedUserIdRef.current !== user.id) {
+        const storageKey = `general-store-cart-${user.id}`;
+        try {
+          const loaded = JSON.parse(localStorage.getItem(storageKey)) || [];
+          setItems(loaded);
+        } catch {
+          setItems([]);
+        }
+        loadedUserIdRef.current = user.id;
+      }
+    } else {
+      setItems([]);
+      loadedUserIdRef.current = null;
+    }
+  }, [user]);
+
+  // Save to user-specific localStorage key when items or user changes
+  useEffect(() => {
+    if (user && loadedUserIdRef.current === user.id) {
+      const storageKey = `general-store-cart-${user.id}`;
+      localStorage.setItem(storageKey, JSON.stringify(items));
+    }
+  }, [items, user]);
 
   const addItem = (product, qty = 1) => {
+    if (!user) {
+      window.location.href = "/login";
+      return;
+    }
     if (!product.stock || Number(qty) < 1) {
       return;
     }
@@ -76,12 +98,13 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => setItems([]);
 
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
-  const itemCount = items.reduce((sum, item) => sum + item.qty, 0);
+  const activeItems = user ? items : [];
+  const subtotal = activeItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const itemCount = activeItems.reduce((sum, item) => sum + item.qty, 0);
 
   const value = useMemo(
     () => ({
-      items,
+      items: activeItems,
       subtotal,
       itemCount,
       addItem,
@@ -89,7 +112,7 @@ export const CartProvider = ({ children }) => {
       removeItem,
       clearCart,
     }),
-    [items, subtotal, itemCount],
+    [activeItems, subtotal, itemCount],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

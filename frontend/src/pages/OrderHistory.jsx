@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage.jsx";
 import LoadingState from "../components/LoadingState.jsx";
+import { formatPrice } from "../utils/format";
 import api, { getErrorMessage } from "../services/api";
 
 const OrderHistory = () => {
@@ -57,7 +58,7 @@ const OrderHistory = () => {
                 <tr key={order._id}>
                   <td>{order._id.slice(-8)}</td>
                   <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>₹{order.totalPrice}</td>
+                  <td>₹{formatPrice(order.totalPrice)}</td>
                   <td>{order.isPaid ? "Paid" : "Pending"}</td>
                   <td>{order.orderStatus}</td>
                   <td>

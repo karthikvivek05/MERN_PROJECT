@@ -2,6 +2,7 @@ import { Edit3, Plus, RefreshCw, Save, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ErrorMessage from "../components/ErrorMessage.jsx";
 import LoadingState from "../components/LoadingState.jsx";
+import { formatPrice } from "../utils/format";
 import api, { getErrorMessage } from "../services/api";
 
 const emptyProduct = {
@@ -198,7 +199,7 @@ const AdminDashboard = () => {
           </div>
           <div className="stat-card">
             <span>Total revenue</span>
-            <strong>₹{stats?.totalRevenue || 0}</strong>
+            <strong>₹{formatPrice(stats?.totalRevenue || 0)}</strong>
           </div>
           <div className="stat-card">
             <span>Total products</span>
@@ -301,7 +302,7 @@ const AdminDashboard = () => {
                   <tr key={product._id}>
                     <td>{product.name}</td>
                     <td>{product.category}</td>
-                    <td>₹{product.price}</td>
+                    <td>₹{formatPrice(product.price)}</td>
                     <td>{product.stock}</td>
                     <td className="table-actions">
                       <button className="icon-button" type="button" onClick={() => editProduct(product)}>
@@ -338,7 +339,7 @@ const AdminDashboard = () => {
                 <tr key={order._id}>
                   <td>{order._id.slice(-8)}</td>
                   <td>{order.user?.email || "Unknown"}</td>
-                  <td>₹{order.totalPrice}</td>
+                  <td>₹{formatPrice(order.totalPrice)}</td>
                   <td>{order.isPaid ? "Yes" : "No"}</td>
                   <td>
                     <select

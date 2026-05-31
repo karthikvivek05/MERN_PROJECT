@@ -1,9 +1,12 @@
 import { ShoppingCart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { formatPrice } from "../utils/format";
 
 const ProductCard = ({ product }) => {
   const { addItem } = useCart();
+  const { isAdmin } = useAuth();
   const image = product.images?.[0];
 
   return (
@@ -28,17 +31,19 @@ const ProductCard = ({ product }) => {
           <span className="muted">({product.numReviews || 0})</span>
         </div>
         <div className="product-card-footer">
-          <strong>₹{product.price}</strong>
-          <button
-            className="icon-button"
-            type="button"
-            disabled={product.stock < 1}
-            onClick={() => addItem(product, 1)}
-            title={product.stock < 1 ? "Out of stock" : "Add to cart"}
-          >
-            <ShoppingCart size={18} />
-            <span className="sr-only">Add to cart</span>
-          </button>
+          <strong>₹{formatPrice(product.price)}</strong>
+          {!isAdmin && (
+            <button
+              className="icon-button"
+              type="button"
+              disabled={product.stock < 1}
+              onClick={() => addItem(product, 1)}
+              title={product.stock < 1 ? "Out of stock" : "Add to cart"}
+            >
+              <ShoppingCart size={18} />
+              <span className="sr-only">Add to cart</span>
+            </button>
+          )}
         </div>
       </div>
     </article>

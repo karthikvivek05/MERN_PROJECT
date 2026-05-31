@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage.jsx";
 import LoadingState from "../components/LoadingState.jsx";
+import { formatPrice } from "../utils/format";
 import api, { getErrorMessage } from "../services/api";
 
 const OrderDetail = () => {
@@ -57,10 +58,10 @@ const OrderDetail = () => {
                 <div>
                   <strong>{item.name}</strong>
                   <p className="muted">
-                    {item.qty} × ₹{item.price}
+                    {item.qty} × ₹{formatPrice(item.price)}
                   </p>
                 </div>
-                <strong>₹{item.qty * item.price}</strong>
+                <strong>₹{formatPrice(item.qty * item.price)}</strong>
               </div>
             ))}
           </section>
@@ -87,7 +88,7 @@ const OrderDetail = () => {
           </div>
           <div className="summary-row total">
             <span>Total</span>
-            <strong>₹{order.totalPrice}</strong>
+            <strong>₹{formatPrice(order.totalPrice)}</strong>
           </div>
         </aside>
       </div>

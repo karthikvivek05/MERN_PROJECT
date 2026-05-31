@@ -11,6 +11,8 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
+import CartButton from "./CartButton.jsx";
+import SearchInput from "./SearchInput.jsx";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -48,8 +50,7 @@ const Navbar = () => {
         </Link>
 
         <form className="nav-search" onSubmit={submitSearch}>
-          <Search size={18} aria-hidden="true" />
-          <input
+          <SearchInput
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
             placeholder="Search products"
@@ -67,15 +68,17 @@ const Navbar = () => {
         </button>
 
         <nav className={`nav-links ${open ? "open" : ""}`}>
-          <NavLink
-            to="/cart"
-            className="cart-link"
-            onClick={() => setOpen(false)}
-          >
-            <ShoppingCart size={18} aria-hidden="true" />
-            <span>Cart</span>
-            {itemCount > 0 && <span className="badge">{itemCount}</span>}
-          </NavLink>
+          {user && !isAdmin && (
+            <div onClick={() => setOpen(false)}>
+              <CartButton
+                count={itemCount}
+                onClick={() => {
+                  navigate("/cart");
+                  setOpen(false);
+                }}
+              />
+            </div>
+          )}
           {user ? (
             <>
               <NavLink to="/orders" onClick={() => setOpen(false)}>

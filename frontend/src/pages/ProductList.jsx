@@ -13,6 +13,7 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const queryString = searchParams.toString();
 
   const filters = useMemo(
@@ -21,12 +22,23 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
       category: searchParams.get("category") || "",
       minPrice: searchParams.get("minPrice") || "",
       maxPrice: searchParams.get("maxPrice") || "",
-      rating: searchParams.get("rating") || "",
       sort: searchParams.get("sort") || "newest",
-      page: searchParams.get("page") || "1",
+      limit: searchParams.get("limit") || "50",
     }),
     [queryString],
   );
+
+  // pendingFilters holds UI edits until the user clicks Apply
+  const [pendingFilters, setPendingFilters] = useState(filters);
+  const [minInput, setMinInput] = useState(filters.minPrice || "");
+  const [maxInput, setMaxInput] = useState(filters.maxPrice || "");
+
+  useEffect(() => {
+    // sync pending filters when applied filters (from URL) change
+    setPendingFilters(filters);
+    setMinInput(filters.minPrice || "");
+    setMaxInput(filters.maxPrice || "");
+  }, [queryString]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -34,6 +46,7 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
       setError("");
 
       try {
+        // loadProducts uses `filters` from URL
         const { data } = await api.get("/products", { params: filters });
         setProducts(data.products);
         setCategories(data.categories);
@@ -48,35 +61,80 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
     loadProducts();
   }, [filters]);
 
-  const updateFilter = (name, value) => {
-    const next = new URLSearchParams(searchParams);
-
-    if (value) {
-      next.set(name, value);
-    } else {
-      next.delete(name);
-    }
-
-    if (name !== "page") {
-      next.set("page", "1");
-    }
-
-    setSearchParams(next);
+  const updatePending = (name, value) => {
+    setPendingFilters((current) => {
+      const next = { ...current, [name]: String(value) };
+      return next;
+    });
   };
 
-  const clearFilters = () => setSearchParams({});
+  const clearPending = () => {
+    const empty = {
+      keyword: "",
+      category: "",
+      minPrice: "",
+      maxPrice: "",
+      sort: "newest",
+      limit: "50",
+    };
+    setPendingFilters(empty);
+    setMinInput("");
+    setMaxInput("");
+  };
 
-  const FiltersInputs = () => (
+  const applyFilters = () => {
+    const next = new URLSearchParams();
+    // only set params that have a non-empty value (except limit)
+    if (pendingFilters.keyword) next.set("keyword", pendingFilters.keyword);
+    if (pendingFilters.category) next.set("category", pendingFilters.category);
+    const minVal = String(minInput || "");
+    const maxVal = String(maxInput || "");
+    if (minVal !== "") next.set("minPrice", minVal);
+    if (maxVal !== "") next.set("maxPrice", maxVal);
+    if (pendingFilters.sort) next.set("sort", pendingFilters.sort);
+    if (pendingFilters.limit) next.set("limit", pendingFilters.limit);
+
+    setSearchParams(next);
+
+    // sync pendingFilters to reflect applied params so UI updates predictably
+    const applied = {
+      keyword: next.get("keyword") || "",
+      category: next.get("category") || "",
+      minPrice: next.get("minPrice") || "",
+      maxPrice: next.get("maxPrice") || "",
+      sort: next.get("sort") || "newest",
+      limit: next.get("limit") || "50",
+    };
+    setPendingFilters(applied);
+    setMobileFiltersOpen(false);
+  };
+
+  const clearFilters = () => {
+    setSearchParams({});
+  };
+
+  const pendingEqualsApplied = () => {
+    if (String(pendingFilters.keyword || "") !== String(filters.keyword || ""))
+      return false;
+    if (
+      String(pendingFilters.category || "") !== String(filters.category || "")
+    )
+      return false;
+    if (String(minInput || "") !== String(filters.minPrice || "")) return false;
+    if (String(maxInput || "") !== String(filters.maxPrice || "")) return false;
+    if (String(pendingFilters.sort || "") !== String(filters.sort || ""))
+      return false;
+    if (String(pendingFilters.limit || "") !== String(filters.limit || ""))
+      return false;
+
+    return true;
+  };
+
+  const filtersInputs = (
     <>
-      <input
-        value={filters.keyword}
-        onChange={(event) => updateFilter("keyword", event.target.value)}
-        placeholder="Keyword"
-        aria-label="Keyword"
-      />
       <select
-        value={filters.category}
-        onChange={(event) => updateFilter("category", event.target.value)}
+        value={pendingFilters.category}
+        onChange={(event) => updatePending("category", event.target.value)}
       >
         <option value="">All categories</option>
         {categories.map((category) => (
@@ -86,42 +144,48 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
         ))}
       </select>
       <input
-        type="number"
-        min="0"
-        value={filters.minPrice}
-        onChange={(event) => updateFilter("minPrice", event.target.value)}
+        type="text"
+        inputMode="numeric"
+        value={minInput}
+        onChange={(e) => setMinInput(e.target.value)}
         placeholder="Min price"
         aria-label="Minimum price"
       />
       <input
-        type="number"
-        min="0"
-        value={filters.maxPrice}
-        onChange={(event) => updateFilter("maxPrice", event.target.value)}
+        type="text"
+        inputMode="numeric"
+        value={maxInput}
+        onChange={(e) => setMaxInput(e.target.value)}
         placeholder="Max price"
         aria-label="Maximum price"
       />
       <select
-        value={filters.rating}
-        onChange={(event) => updateFilter("rating", event.target.value)}
-      >
-        <option value="">Any rating</option>
-        <option value="4">4+</option>
-        <option value="3">3+</option>
-        <option value="2">2+</option>
-      </select>
-      <select
-        value={filters.sort}
-        onChange={(event) => updateFilter("sort", event.target.value)}
+        value={pendingFilters.sort}
+        onChange={(event) => updatePending("sort", event.target.value)}
       >
         <option value="newest">Newest</option>
         <option value="top-rated">Top rated</option>
         <option value="price-asc">Price low to high</option>
         <option value="price-desc">Price high to low</option>
       </select>
-      <button className="secondary-button" type="button" onClick={clearFilters}>
-        Reset
-      </button>
+      {pendingEqualsApplied() ? (
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={clearFilters}
+          disabled={!queryString}
+        >
+          Reset
+        </button>
+      ) : (
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={applyFilters}
+        >
+          Apply
+        </button>
+      )}
     </>
   );
 
@@ -136,7 +200,9 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
             <p className="muted">Search, filter, and sort the full catalog.</p>
           )}
         </div>
-        <p className="muted">{pagination.total || 0} item(s)</p>
+        <div style={{ textAlign: "right" }}>
+          <p className="muted">{pagination.total || 0} item(s)</p>
+        </div>
       </div>
 
       <div className="toolbar">
@@ -159,9 +225,7 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
         </div>
 
         {/* Desktop / wide screens: show inputs inline */}
-        <div className="toolbar-filters-desktop">
-          <FiltersInputs />
-        </div>
+        <div className="toolbar-filters-desktop">{filtersInputs}</div>
       </div>
 
       {/* Mobile overlay panel */}
@@ -178,9 +242,7 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
                 <X size={18} />
               </button>
             </div>
-            <div className="mobile-filters-body">
-              <FiltersInputs />
-            </div>
+            <div className="mobile-filters-body">{filtersInputs}</div>
           </div>
           <div
             className="mobile-filters-backdrop"
@@ -200,27 +262,7 @@ const ProductList = ({ title = "Products", compactIntro = false }) => {
               <ProductCard product={product} key={product._id} />
             ))}
           </div>
-          <div className="pagination">
-            <button
-              className="secondary-button"
-              type="button"
-              disabled={pagination.page <= 1}
-              onClick={() => updateFilter("page", String(pagination.page - 1))}
-            >
-              Previous
-            </button>
-            <span>
-              Page {pagination.page} of {pagination.pages || 1}
-            </span>
-            <button
-              className="secondary-button"
-              type="button"
-              disabled={pagination.page >= pagination.pages}
-              onClick={() => updateFilter("page", String(pagination.page + 1))}
-            >
-              Next
-            </button>
-          </div>
+          {/* Pagination removed: all products shown on a single page */}
         </>
       ) : (
         <div className="empty-state">No products match these filters.</div>

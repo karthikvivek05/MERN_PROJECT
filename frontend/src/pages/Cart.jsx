@@ -1,10 +1,20 @@
 import { ArrowRight, ShoppingBag } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartItem from "../components/CartItem.jsx";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { formatPrice } from "../utils/format";
+import { useEffect } from "react";
 
 const Cart = () => {
   const { items, subtotal, clearCart } = useCart();
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAdmin) navigate("/");
+    if (!user) navigate("/login");
+  }, [isAdmin, user]);
 
   return (
     <section className="stack">
@@ -14,7 +24,11 @@ const Cart = () => {
           <p className="muted">Review quantities before checkout.</p>
         </div>
         {items.length > 0 && (
-          <button className="secondary-button" type="button" onClick={clearCart}>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={clearCart}
+          >
             Clear cart
           </button>
         )}
@@ -31,9 +45,11 @@ const Cart = () => {
             <h2>Summary</h2>
             <div className="summary-row">
               <span>Subtotal</span>
-              <strong>₹{subtotal}</strong>
+              <strong>₹{formatPrice(subtotal)}</strong>
             </div>
-            <p className="muted small">Shipping and final stock validation are handled during checkout.</p>
+            <p className="muted small">
+              Shipping and final stock validation are handled during checkout.
+            </p>
             <Link className="primary-button full-width" to="/checkout">
               Checkout
               <ArrowRight size={18} aria-hidden="true" />

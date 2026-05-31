@@ -1,8 +1,9 @@
 import { useState } from "react";
 import ErrorMessage from "./ErrorMessage.jsx";
+import RatingRadio from "./RatingRadio.jsx";
 
 const ReviewForm = ({ onSubmit, submitting }) => {
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
   const [error, setError] = useState("");
 
@@ -15,9 +16,14 @@ const ReviewForm = ({ onSubmit, submitting }) => {
       return;
     }
 
-    await onSubmit({ rating, comment });
+    if (!rating) {
+      setError("Please select a rating.");
+      return;
+    }
+
+    await onSubmit({ rating: Number(rating), comment });
     setComment("");
-    setRating(5);
+    setRating("");
   };
 
   return (
@@ -25,13 +31,7 @@ const ReviewForm = ({ onSubmit, submitting }) => {
       <ErrorMessage message={error} />
       <label>
         Rating
-        <select value={rating} onChange={(event) => setRating(event.target.value)}>
-          {[5, 4, 3, 2, 1].map((value) => (
-            <option value={value} key={value}>
-              {value}
-            </option>
-          ))}
-        </select>
+        <RatingRadio value={rating} onChange={setRating} />
       </label>
       <label>
         Comment

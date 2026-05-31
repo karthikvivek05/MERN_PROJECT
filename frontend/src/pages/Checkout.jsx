@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage.jsx";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { formatPrice } from "../utils/format";
 import api, { getErrorMessage } from "../services/api";
 
 const loadRazorpayScript = () =>
@@ -20,12 +22,16 @@ const loadRazorpayScript = () =>
 
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
+  const { isAdmin } = useAuth();
+  useEffect(() => {
+    if (isAdmin) navigate("/");
+  }, [isAdmin]);
   const [shippingAddress, setShippingAddress] = useState({
     fullName: "",
     address: "",
     city: "",
     pincode: "",
-    phone: ""
+    phone: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +39,7 @@ const Checkout = () => {
 
   const orderItems = items.map((item) => ({
     product: item.productId,
-    qty: item.qty
+    qty: item.qty,
   }));
 
   const handleSubmit = async (event) => {
@@ -68,22 +74,27 @@ const Checkout = () => {
             const created = await api.post("/orders", {
               orderItems,
               shippingAddress,
-              paymentResult: verified.data.paymentResult
+              paymentResult: verified.data.paymentResult,
             });
             clearCart();
             navigate(`/orders/${created.data.order._id}`);
           } catch (err) {
-            setError(getErrorMessage(err, "Payment completed, but order creation failed"));
+            setError(
+              getErrorMessage(
+                err,
+                "Payment completed, but order creation failed",
+              ),
+            );
           } finally {
             setSubmitting(false);
           }
         },
         theme: {
-          color: "#1f6feb"
+          color: "#1f6feb",
         },
         modal: {
-          ondismiss: () => setSubmitting(false)
-        }
+          ondismiss: () => setSubmitting(false),
+        },
       };
 
       const razorpay = new window.Razorpay(options);
@@ -101,7 +112,7 @@ const Checkout = () => {
           <h1>Checkout</h1>
           <p className="muted">Shipping details and Razorpay payment.</p>
         </div>
-        <strong>₹{subtotal}</strong>
+        <strong>₹{formatPrice(subtotal)}</strong>
       </div>
       <ErrorMessage message={error} />
 
@@ -111,7 +122,12 @@ const Checkout = () => {
             Full name
             <input
               value={shippingAddress.fullName}
-              onChange={(event) => setShippingAddress({ ...shippingAddress, fullName: event.target.value })}
+              onChange={(event) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  fullName: event.target.value,
+                })
+              }
               required
             />
           </label>
@@ -119,7 +135,12 @@ const Checkout = () => {
             Address
             <textarea
               value={shippingAddress.address}
-              onChange={(event) => setShippingAddress({ ...shippingAddress, address: event.target.value })}
+              onChange={(event) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  address: event.target.value,
+                })
+              }
               rows="3"
               required
             />
@@ -129,7 +150,12 @@ const Checkout = () => {
               City
               <input
                 value={shippingAddress.city}
-                onChange={(event) => setShippingAddress({ ...shippingAddress, city: event.target.value })}
+                onChange={(event) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    city: event.target.value,
+                  })
+                }
                 required
               />
             </label>
@@ -137,7 +163,12 @@ const Checkout = () => {
               Pincode
               <input
                 value={shippingAddress.pincode}
-                onChange={(event) => setShippingAddress({ ...shippingAddress, pincode: event.target.value })}
+                onChange={(event) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    pincode: event.target.value,
+                  })
+                }
                 required
               />
             </label>
@@ -146,11 +177,20 @@ const Checkout = () => {
             Phone
             <input
               value={shippingAddress.phone}
-              onChange={(event) => setShippingAddress({ ...shippingAddress, phone: event.target.value })}
+              onChange={(event) =>
+                setShippingAddress({
+                  ...shippingAddress,
+                  phone: event.target.value,
+                })
+              }
               required
             />
           </label>
-          <button className="primary-button" type="submit" disabled={submitting || !items.length}>
+          <button
+            className="primary-button"
+            type="submit"
+            disabled={submitting || !items.length}
+          >
             {submitting ? "Opening payment..." : "Pay with Razorpay"}
           </button>
         </form>
@@ -162,12 +202,12 @@ const Checkout = () => {
               <span>
                 {item.name} × {item.qty}
               </span>
-              <strong>₹{item.price * item.qty}</strong>
+              <strong>₹{formatPrice(item.price * item.qty)}</strong>
             </div>
           ))}
           <div className="summary-row total">
             <span>Total</span>
-            <strong>₹{subtotal}</strong>
+            <strong>₹{formatPrice(subtotal)}</strong>
           </div>
         </aside>
       </div>

@@ -222,9 +222,16 @@ const deleteReview = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
-  const review = product.reviews.find(
-    (item) => item.user.toString() === req.user._id.toString()
-  );
+  let review;
+  if (req.user.role === "admin" && req.query.reviewId) {
+    review = product.reviews.find(
+      (item) => item._id.toString() === req.query.reviewId.toString()
+    );
+  } else {
+    review = product.reviews.find(
+      (item) => item.user.toString() === req.user._id.toString()
+    );
+  }
 
   if (!review) {
     res.status(404);

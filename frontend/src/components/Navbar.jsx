@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import CartButton from "./CartButton.jsx";
@@ -21,6 +21,9 @@ const Navbar = () => {
   const { user, isAdmin, logout } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const showSearch = location.pathname !== "/login" && location.pathname !== "/register";
 
   const submitSearch = (event) => {
     event.preventDefault();
@@ -49,14 +52,18 @@ const Navbar = () => {
           <span>NexCart</span>
         </Link>
 
-        <form className="nav-search" onSubmit={submitSearch}>
-          <SearchInput
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder="Search products"
-            aria-label="Search products"
-          />
-        </form>
+        {showSearch ? (
+          <form className="nav-search" onSubmit={submitSearch}>
+            <SearchInput
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              placeholder="Search products"
+              aria-label="Search products"
+            />
+          </form>
+        ) : (
+          <div className="nav-search" style={{ visibility: "hidden" }} />
+        )}
 
         <button
           className="icon-button mobile-menu"

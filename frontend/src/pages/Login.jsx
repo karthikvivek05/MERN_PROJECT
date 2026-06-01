@@ -16,8 +16,16 @@ const Login = () => {
     setSubmitting(true);
     setMessage("");
     try {
-      await login(form);
-      navigate(location.state?.from?.pathname || "/", { replace: true });
+      const user = await login(form);
+      const requestedPath = location.state?.from?.pathname;
+      const nextPath =
+        user.role === "admin"
+          ? "/admin"
+          : requestedPath && requestedPath !== "/admin"
+            ? requestedPath
+            : "/";
+
+      navigate(nextPath, { replace: true });
     } catch (err) {
       setMessage(err.message);
     } finally {

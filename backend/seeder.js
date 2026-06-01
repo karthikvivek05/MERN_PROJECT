@@ -74,18 +74,23 @@ const sampleProducts = [
   }
 ];
 
-const requireAdminSeedEnv = () => {
-  const { ADMIN_SEED_NAME, ADMIN_SEED_EMAIL, ADMIN_SEED_PASSWORD } = process.env;
+const defaultAdmin = {
+  name: "Admin",
+  email: "admin@nexcart.local"
+};
 
-  if (!ADMIN_SEED_NAME || !ADMIN_SEED_EMAIL || !ADMIN_SEED_PASSWORD) {
+const requireAdminSeed = () => {
+  const { ADMIN_SEED_PASSWORD } = process.env;
+
+  if (!ADMIN_SEED_PASSWORD) {
     throw new Error(
-      "ADMIN_SEED_NAME, ADMIN_SEED_EMAIL, and ADMIN_SEED_PASSWORD must be set in .env"
+      "ADMIN_SEED_PASSWORD must be set in .env"
     );
   }
 
   return {
-    name: ADMIN_SEED_NAME,
-    email: ADMIN_SEED_EMAIL,
+    name: defaultAdmin.name,
+    email: defaultAdmin.email,
     password: ADMIN_SEED_PASSWORD,
     role: "admin"
   };
@@ -98,7 +103,7 @@ const importData = async () => {
   await Product.deleteMany();
   await User.deleteMany();
 
-  const adminUser = await User.create(requireAdminSeedEnv());
+  const adminUser = await User.create(requireAdminSeed());
   const products = sampleProducts.map((product) => ({
     ...product,
     createdBy: adminUser._id

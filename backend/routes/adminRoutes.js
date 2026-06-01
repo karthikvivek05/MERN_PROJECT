@@ -1,8 +1,7 @@
-const express = require("express");
 const {
   getStats,
   getUsers,
-  updateUserRole
+  updateUserRole,
 } = require("../controllers/adminController");
 const { protect } = require("../middleware/authMiddleware");
 const { isAdmin } = require("../middleware/adminMiddleware");

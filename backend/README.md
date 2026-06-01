@@ -5,7 +5,7 @@ Express + MongoDB REST API for the multi-category ecommerce store.
 ## Setup
 
 1. Copy `.env.example` to `.env`.
-2. Fill in MongoDB, JWT, Razorpay, Cloudinary, and admin seed values.
+2. Fill in MongoDB, JWT, Razorpay, Cloudinary, and the admin seed password.
 3. Install dependencies:
 
 ```bash
@@ -25,6 +25,9 @@ npm run dev
 ```
 
 The API defaults to `http://localhost:5000`.
+
+Seeding creates one admin user with email `admin@nexcart.local`; every account
+created through registration is stored with the `user` role by default.
 
 ## Main Routes
 

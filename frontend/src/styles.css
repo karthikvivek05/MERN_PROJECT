@@ -682,6 +682,38 @@ tr:last-child td {
   color: var(--success);
 }
 
+.cart-toast {
+  position: fixed;
+  top: 88px;
+  right: max(16px, calc((100vw - 1180px) / 2));
+  z-index: 80;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: min(320px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid #a6e1c1;
+  border-radius: 8px;
+  background: #effcf4;
+  color: var(--success);
+  box-shadow: 0 18px 42px rgba(23, 32, 51, 0.16);
+  animation: toast-in 0.18s ease-out;
+}
+
+.cart-toast strong,
+.cart-toast span {
+  display: block;
+}
+
+.cart-toast span {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pagination {
   display: flex;
   align-items: center;
@@ -727,6 +759,18 @@ button:disabled,
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -782,6 +826,11 @@ button:disabled,
 
   .nav-links.open {
     display: flex;
+  }
+
+  .cart-toast {
+    top: 132px;
+    right: 16px;
   }
 
   .nav-links a,

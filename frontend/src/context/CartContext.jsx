@@ -6,6 +6,7 @@ import React, {
   useState,
   useRef,
 } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
@@ -13,7 +14,9 @@ const CartContext = createContext(null);
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
+  const [cartNotice, setCartNotice] = useState(null);
   const loadedUserIdRef = useRef(null);
+  const noticeTimerRef = useRef(null);
 
   // Load user-specific cart when user changes
   useEffect(() => {
@@ -41,6 +44,26 @@ export const CartProvider = ({ children }) => {
       localStorage.setItem(storageKey, JSON.stringify(items));
     }
   }, [items, user]);
+
+  useEffect(() => {
+    return () => {
+      if (noticeTimerRef.current) {
+        clearTimeout(noticeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const showCartNotice = (productName) => {
+    if (noticeTimerRef.current) {
+      clearTimeout(noticeTimerRef.current);
+    }
+
+    setCartNotice({ productName });
+
+    noticeTimerRef.current = setTimeout(() => {
+      setCartNotice(null);
+    }, 2200);
+  };
 
   const addItem = (product, qty = 1) => {
     if (!user) {
@@ -76,6 +99,7 @@ export const CartProvider = ({ children }) => {
         },
       ];
     });
+    showCartNotice(product.name);
   };
 
   const updateQty = (productId, qty) => {
@@ -115,7 +139,20 @@ export const CartProvider = ({ children }) => {
     [activeItems, subtotal, itemCount],
   );
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      {cartNotice && (
+        <div className="cart-toast" role="status" aria-live="polite">
+          <CheckCircle2 size={20} aria-hidden="true" />
+          <div>
+            <strong>Added to cart</strong>
+            <span>{cartNotice.productName}</span>
+          </div>
+        </div>
+      )}
+    </CartContext.Provider>
+  );
 };
 
 export const useCart = () => useContext(CartContext);
